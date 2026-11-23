@@ -24,10 +24,10 @@ export function Hero({ data }: { data: SiteData }) {
   return (
     <section ref={ref} id="top" aria-labelledby="hero-title" className="grain relative isolate overflow-hidden pt-24 md:pt-28">
       <motion.div aria-hidden style={{ y: glowY }} className="aurora absolute -inset-20 -z-10 opacity-60" />
-      <div className={`${wrap} grid items-center gap-10 pb-16 md:grid-cols-[1.25fr_.75fr] md:pb-24`}>
+      <div className={`${wrap} grid items-center gap-6 pb-16 md:grid-cols-[1.25fr_.75fr] md:gap-10 md:pb-24`}>
         <div>
           <Signature className="-ms-2 mb-2 w-[min(100%,420px)]" />
-          <p className="mb-5 text-xs font-semibold uppercase leading-relaxed tracking-[.2em] text-lime">{ml(h.kicker)}</p>
+          <p className="mb-5 text-[11px] font-semibold uppercase leading-relaxed tracking-[.18em] text-lime md:text-xs md:tracking-[.2em]">{ml(h.kicker)}</p>
           <h1 id="hero-title" className="font-display text-balance text-[clamp(2.2rem,6.4vw,5.4rem)] leading-[1.02]">
             {ml(h.headline)}
           </h1>
@@ -37,10 +37,10 @@ export function Hero({ data }: { data: SiteData }) {
             <MagneticLink href="#contact" className="border border-cream/25 hover:bg-cream/10">{t('hero.ctaContact')}</MagneticLink>
           </div>
         </div>
-        <motion.div style={{ y }} className="relative mx-auto w-full max-w-[22rem]">
+        <motion.div style={{ y }} className="relative order-first mx-auto w-full max-w-[22rem] md:order-none">
           <div className="absolute -inset-3 -z-10 rounded-[2.5rem] bg-gradient-to-br from-magenta/50 via-lilac/30 to-lime/30 blur-2xl" aria-hidden />
           <div className="overflow-hidden rounded-[2rem] border border-cream/10 bg-ink-2">
-            <video className="aspect-[9/16] w-full object-cover" src="/media/video/hero-loop.mp4" poster="/media/video/sarah-2-poster.webp"
+            <video className="aspect-[4/5] max-h-[46svh] w-full object-cover object-[50%_35%] md:aspect-[9/16] md:max-h-none" src="/media/video/hero-loop.mp4" poster="/media/video/sarah-2-poster.webp"
               autoPlay={!reduce} muted loop playsInline preload="metadata" aria-label={t('hero.videoLabel')} />
           </div>
         </motion.div>
