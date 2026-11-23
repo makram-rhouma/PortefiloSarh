@@ -41,7 +41,7 @@ Apply with the Supabase CLI (`supabase db push`) or paste them, in order, into D
 
 **Security model:** the public can read visible rows only; every write is checked in the database by RLS (`is_admin()`), never only in the frontend. Visitors can only insert contact messages (validated by check constraints).
 
-### Make someone an admin (see also `supabase/admin_setup.sql`, which includes a rolled-back self-check)
+### Make someone an admin (run `supabase/admin_setup.sql`, then optionally `supabase/admin_check.sql`, a rolled-back RLS self-check)
 1. Create the user (Dashboard → Authentication → Users → Add user, or sign-up).
 2. In the SQL editor:
 ```sql
