@@ -10,7 +10,7 @@ const fails = []
 const check = (ok, msg) => { console.log(`${ok ? 'PASS' : 'FAIL'} ${msg}`); if (!ok) fails.push(msg) }
 const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 
-for (const width of [320, 375, 390, 430, 768, 1024, 1440]) {
+for (const width of [320, 360, 375, 390, 414, 430, 768, 1024, 1440]) {
   const ctx = await browser.newContext({ viewport: { width, height: 860 }, hasTouch: width < 768, isMobile: width < 768 })
   const page = await ctx.newPage()
   const errors = []
@@ -27,6 +27,21 @@ for (const width of [320, 375, 390, 430, 768, 1024, 1440]) {
   check(smallTargets.length === 0, `${width}px: tap targets >= 40px ${smallTargets.slice(0, 5).join(' | ')}`)
   const vids = await page.evaluate(() => [...document.querySelectorAll('#dance video')].every((v) => v.getBoundingClientRect().width <= innerWidth && v.getBoundingClientRect().height <= innerHeight))
   check(vids, `${width}px: videos fit the screen`)
+  if (width < 1024) {
+    const dock = page.locator('nav[aria-label="Quick navigation"]')
+    await page.evaluate(() => document.getElementById('gallery').scrollIntoView({ behavior: 'instant' })); await wait(700)
+    check(await dock.isVisible(), `${width}px: bottom dock visible while scrolled`)
+    check((await dock.locator('[aria-current]').textContent()) === 'Gallery', `${width}px: dock highlights the visible section`)
+    await dock.getByText('Journey').click(); await wait(1200)
+    check((await dock.locator('[aria-current]').textContent()) === 'Journey' && await page.evaluate(() => Math.abs(document.getElementById('journey').getBoundingClientRect().top) < 120), `${width}px: dock item scrolls to its section`)
+    const dockOk = await page.evaluate(() => { scrollTo({ top: document.body.scrollHeight, behavior: "instant" }); return new Promise((r) => setTimeout(() => {
+      const top = document.querySelector('nav[aria-label="Quick navigation"]').getBoundingClientRect().top
+      const copy = [...document.querySelectorAll('footer p')].pop().getBoundingClientRect().bottom
+      r(copy <= top) }, 600)) })
+    check(dockOk, `${width}px: dock never covers the footer at the end of the page`)
+  } else {
+    check(!(await page.locator('nav[aria-label="Quick navigation"]').isVisible()), `${width}px: dock hidden on desktop`)
+  }
   if (shots) {
     await page.evaluate(() => scrollTo(0, 0)); await wait(400)
     await page.screenshot({ path: `${shots}/home-${width}.png` })

@@ -2,9 +2,9 @@ import type { Lang } from '../content/defaults'
 
 // UI strings. Admin can override any key per language (site_settings.translations).
 const en = {
-  'nav.about': 'About', 'nav.journey': 'Journey', 'nav.dance': 'Dance & Fitness', 'nav.gallery': 'Gallery',
+  'nav.home': 'Home', 'nav.about': 'About', 'nav.journey': 'Journey', 'nav.dance': 'Dance & Fitness', 'nav.gallery': 'Gallery',
   'nav.skills': 'Skills', 'nav.education': 'Education', 'nav.contact': 'Contact',
-  'nav.menu': 'Menu', 'nav.close': 'Close menu', 'nav.skip': 'Skip to content', 'nav.language': 'Language',
+  'nav.menu': 'Menu', 'nav.close': 'Close menu', 'nav.skip': 'Skip to content', 'nav.dock': 'Quick navigation', 'nav.danceShort': 'Dance', 'nav.language': 'Language',
   'hero.ctaJourney': 'Explore My Journey', 'hero.ctaContact': 'Contact Me', 'hero.scroll': 'Scroll',
   'hero.videoLabel': 'Sarah teaching a fitness routine',
   'about.eyebrow': 'About me', 'about.based': 'Based in', 'about.nationality': 'Nationality',
@@ -50,9 +50,9 @@ export type Key = keyof typeof en
 type Dict = Record<Key, string>
 
 const fr: Dict = {
-  'nav.about': 'À propos', 'nav.journey': 'Parcours', 'nav.dance': 'Danse & fitness', 'nav.gallery': 'Galerie',
+  'nav.home': 'Accueil', 'nav.about': 'À propos', 'nav.journey': 'Parcours', 'nav.dance': 'Danse & fitness', 'nav.gallery': 'Galerie',
   'nav.skills': 'Compétences', 'nav.education': 'Formation', 'nav.contact': 'Contact',
-  'nav.menu': 'Menu', 'nav.close': 'Fermer le menu', 'nav.skip': 'Aller au contenu', 'nav.language': 'Langue',
+  'nav.menu': 'Menu', 'nav.close': 'Fermer le menu', 'nav.skip': 'Aller au contenu', 'nav.dock': 'Navigation rapide', 'nav.danceShort': 'Danse', 'nav.language': 'Langue',
   'hero.ctaJourney': 'Découvrir mon parcours', 'hero.ctaContact': 'Me contacter', 'hero.scroll': 'Défiler',
   'hero.videoLabel': 'Sarah anime une séance de fitness',
   'about.eyebrow': 'À propos', 'about.based': 'Basée en', 'about.nationality': 'Nationalité',
@@ -95,9 +95,9 @@ const fr: Dict = {
 }
 
 const ar: Dict = {
-  'nav.about': 'نبذة عني', 'nav.journey': 'مسيرتي', 'nav.dance': 'الرقص واللياقة', 'nav.gallery': 'المعرض',
+  'nav.home': 'الرئيسية', 'nav.about': 'نبذة عني', 'nav.journey': 'مسيرتي', 'nav.dance': 'الرقص واللياقة', 'nav.gallery': 'المعرض',
   'nav.skills': 'المهارات', 'nav.education': 'التعليم', 'nav.contact': 'تواصل',
-  'nav.menu': 'القائمة', 'nav.close': 'إغلاق القائمة', 'nav.skip': 'انتقل إلى المحتوى', 'nav.language': 'اللغة',
+  'nav.menu': 'القائمة', 'nav.close': 'إغلاق القائمة', 'nav.skip': 'انتقل إلى المحتوى', 'nav.dock': 'تنقّل سريع', 'nav.danceShort': 'رقص', 'nav.language': 'اللغة',
   'hero.ctaJourney': 'اكتشف مسيرتي', 'hero.ctaContact': 'تواصل معي', 'hero.scroll': 'مرّر',
   'hero.videoLabel': 'سارة تقدّم تمرين لياقة',
   'about.eyebrow': 'نبذة عني', 'about.based': 'مقيمة في', 'about.nationality': 'الجنسية',
@@ -140,9 +140,9 @@ const ar: Dict = {
 }
 
 const es: Dict = {
-  'nav.about': 'Sobre mí', 'nav.journey': 'Trayectoria', 'nav.dance': 'Danza y fitness', 'nav.gallery': 'Galería',
+  'nav.home': 'Inicio', 'nav.about': 'Sobre mí', 'nav.journey': 'Trayectoria', 'nav.dance': 'Danza y fitness', 'nav.gallery': 'Galería',
   'nav.skills': 'Habilidades', 'nav.education': 'Formación', 'nav.contact': 'Contacto',
-  'nav.menu': 'Menú', 'nav.close': 'Cerrar menú', 'nav.skip': 'Ir al contenido', 'nav.language': 'Idioma',
+  'nav.menu': 'Menú', 'nav.close': 'Cerrar menú', 'nav.skip': 'Ir al contenido', 'nav.dock': 'Navegación rápida', 'nav.danceShort': 'Danza', 'nav.language': 'Idioma',
   'hero.ctaJourney': 'Descubre mi trayectoria', 'hero.ctaContact': 'Contáctame', 'hero.scroll': 'Desliza',
   'hero.videoLabel': 'Sarah dirigiendo una rutina de fitness',
   'about.eyebrow': 'Sobre mí', 'about.based': 'Vivo en', 'about.nationality': 'Nacionalidad',

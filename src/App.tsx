@@ -1,5 +1,6 @@
 import { MotionConfig } from 'framer-motion'
 import { Header, Loader } from './components/chrome'
+import { MobileDock } from './components/MobileDock'
 import { useSiteData } from './content/useSiteData'
 import { I18nProvider } from './i18n/I18n'
 import { About, Contact, Dance, EducationSection, Footer, Gallery, Hero, Journey, Skills } from './site/Sections'
@@ -22,6 +23,7 @@ export default function App() {
           <Contact data={data} />
         </main>
         <Footer data={data} />
+        <MobileDock />
       </MotionConfig>
     </I18nProvider>
   )

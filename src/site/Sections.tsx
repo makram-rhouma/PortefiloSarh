@@ -260,7 +260,8 @@ export function EducationSection({ data }: { data: SiteData }) {
 
 export function resolveSiteUrl(s: SiteData['settings']) {
   const u = s.qrUrl || s.siteUrl || SITE_URL_FALLBACK
-  return /localhost|127\.0\.0\.1/.test(u) ? SITE_URL_FALLBACK : u // a QR must never point to a dev machine
+  // never a dev machine, never the pre-rename Netlify domain
+  return /localhost|127\.0\.0\.1|portefilosarhaproject\.netlify\.app/.test(u) ? SITE_URL_FALLBACK : u
 }
 
 export function Contact({ data }: { data: SiteData }) {

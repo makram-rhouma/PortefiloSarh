@@ -52,7 +52,7 @@ export interface PortfolioItem {
 
 const m = (en: string, fr: string, ar: string, es: string): ML => ({ en, fr, ar, es })
 
-export const SITE_URL_FALLBACK = 'https://portefilosarhaproject.netlify.app'
+export const SITE_URL_FALLBACK = 'https://sarah-jabalha.netlify.app'
 
 export const settings: Settings = {
   siteUrl: import.meta.env?.VITE_PUBLIC_SITE_URL || SITE_URL_FALLBACK,

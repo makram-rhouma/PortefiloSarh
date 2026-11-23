@@ -19,6 +19,7 @@ describe('contact validation', () => {
 describe('QR url', () => {
   it('never points to localhost', () => {
     expect(resolveSiteUrl({ ...d.settings, qrUrl: 'http://localhost:5173' })).toBe(d.SITE_URL_FALLBACK)
+    expect(resolveSiteUrl({ ...d.settings, qrUrl: '', siteUrl: 'https://portefilosarhaproject.netlify.app' })).toBe('https://sarah-jabalha.netlify.app')
     expect(resolveSiteUrl({ ...d.settings, qrUrl: 'https://x.example' })).toBe('https://x.example')
   })
 })
