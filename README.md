@@ -1,5 +1,6 @@
 # Sarah Jaballah — Portfolio & CMS
-nRepo: https://github.com/makram-rhouma/PortefiloSarh · Production: https://portefilosarhaproject.netlify.app
+
+Repo: https://github.com/makram-rhouma/PortefiloSarh · Production: https://portefilosarhaproject.netlify.app
 
 Multilingual (EN · FR · AR/RTL · ES) personal portfolio with an admin CMS at `/admin`.
 Stack: React 19 + TypeScript + Vite + Tailwind CSS 4 + Framer Motion + Supabase (Auth, Postgres, Storage). Hosted on Netlify.
