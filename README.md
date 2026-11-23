@@ -1,4 +1,5 @@
 # Sarah Jaballah — Portfolio & CMS
+nRepo: https://github.com/makram-rhouma/PortefiloSarh · Production: https://portefilosarhaproject.netlify.app
 
 Multilingual (EN · FR · AR/RTL · ES) personal portfolio with an admin CMS at `/admin`.
 Stack: React 19 + TypeScript + Vite + Tailwind CSS 4 + Framer Motion + Supabase (Auth, Postgres, Storage). Hosted on Netlify.
@@ -37,7 +38,7 @@ Apply with the Supabase CLI (`supabase db push`) or paste them, in order, into D
 
 **Security model:** the public can read visible rows only; every write is checked in the database by RLS (`is_admin()`), never only in the frontend. Visitors can only insert contact messages (validated by check constraints).
 
-### Make someone an admin
+### Make someone an admin (see also `supabase/admin_setup.sql`, which includes a rolled-back self-check)
 1. Create the user (Dashboard → Authentication → Users → Add user, or sign-up).
 2. In the SQL editor:
 ```sql
