@@ -26,6 +26,7 @@ npm run dev            # http://localhost:5173
 |---|---|
 | `npm run build` | typecheck + production build to `dist/` |
 | `npm run typecheck` / `npm run lint` / `npm test` | TypeScript, oxlint, Vitest unit tests |
+| `node scripts/admin-shots.mjs <url> <dir>` | admin screenshots with a mocked session (read-only, no password) |
 | `node scripts/e2e.mjs <url> [shotsDir]` | Chrome end-to-end checks (responsive 320→1440, menu, i18n/RTL, gallery, video, QR, form, `/admin` deep link) |
 | `npm run seed` | regenerate `supabase/migrations/*_seed.sql` from `src/content/defaults.ts` |
 | `bash scripts/optimize-media.sh` | rebuild `public/media/` from the original files (originals are only read) |

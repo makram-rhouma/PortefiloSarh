@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Camera, ChevronDown, Play, Upload } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { QRCard } from '../components/media'
 import * as d from '../content/defaults'
@@ -60,8 +61,11 @@ function useRows(table: string) {
   return { rows, setRows, loading, error, load }
 }
 
-function RowCard({ row, fields, table, onSaved, onDelete, preview, extra }: {
-  row: Row; fields: Field[]; table: string; onSaved: (r: Row) => void; onDelete: () => Promise<void>; preview?: ReactNode; extra?: ReactNode
+const card = 'rounded-2xl bg-ink ring-1 ring-black/5 shadow-[0_1px_2px_rgb(0_0_0/.04),0_10px_30px_-16px_rgb(29_15_43/.25)]'
+const pill = (live: boolean) => `rounded-full px-2 py-0.5 text-[11px] font-semibold ${live ? 'bg-[#e7f8ee] text-[#15803d]' : 'bg-black/5 text-[#6b5f73]'}`
+
+function RowCard({ row, fields, table, onSaved, onDelete, preview, extra, tile = false }: {
+  row: Row; fields: Field[]; table: string; onSaved: (r: Row) => void; onDelete: () => Promise<void>; preview?: ReactNode; extra?: ReactNode; tile?: boolean
 }) {
   const { t, ml: tml } = useI18n()
   const [edit, setEdit] = useState(row)
@@ -81,20 +85,25 @@ function RowCard({ row, fields, table, onSaved, onDelete, preview, extra }: {
     if (error) setMsg(`${t('admin.error')} ${error.message}`); else { onSaved(data as Row); setMsg(t('admin.saved')) }
   }
   return (
-    <li className="rounded-2xl border border-cream/10 bg-ink-2">
-      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="flex min-h-14 w-full items-center gap-3 p-3 text-start">
-        {preview}
-        <span className="min-w-0 flex-1">
+    <li className={`${card} overflow-hidden transition-shadow hover:shadow-[0_14px_40px_-16px_rgb(29_15_43/.35)] ${tile && open ? 'col-span-full' : ''}`}>
+      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open}
+        className={`w-full text-start ${tile && !open ? 'block' : 'flex min-h-16 items-center gap-3 p-3 md:p-4'}`}>
+        {tile && !open ? <span className="relative block aspect-square overflow-hidden bg-ink-2">{preview}</span> : tile ? null : preview}
+        <span className={`min-w-0 flex-1 ${tile && !open ? 'block p-3' : ''}`}>
           <span className="block truncate font-semibold">{firstMl ? tml(edit[firstMl] as d.ML) || '—' : String(edit.id)}</span>
-          <span className="text-xs text-cream/50">#{String(edit.sort_order)} · {edit.visible ? t('admin.live') : t('admin.draft')}{dirty ? ` · ${t('admin.unsaved')}` : ''}</span>
+          <span className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-mute">
+            <span className={pill(!!edit.visible)}>{edit.visible ? t('admin.live') : t('admin.draft')}</span>
+            <span>#{String(edit.sort_order)}</span>
+            {dirty && <span className="font-semibold text-magenta">• {t('admin.unsaved')}</span>}
+          </span>
         </span>
-        <span aria-hidden className={`transition ${open ? 'rotate-180' : ''}`}>⌄</span>
+        {!(tile && !open) && <span aria-hidden className={`grid size-9 place-items-center rounded-full bg-ink-2 transition-transform ${open ? 'rotate-180' : ''}`}><ChevronDown className="size-4" /></span>}
       </button>
       {open && (
-        <div className="space-y-4 border-t border-cream/10 p-3 md:p-5">
+        <div className="space-y-4 border-t border-black/5 p-3 md:p-5">
           {extra}
           <RowForm fields={fields} row={edit} onChange={(r) => setEdit(r as Row)} />
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom))] -mx-3 flex flex-wrap items-center gap-2 border-t border-black/5 bg-ink/95 p-3 backdrop-blur md:-mx-5 md:px-5 lg:bottom-0">
             <button className={btnPrimary} disabled={!dirty || busy} onClick={save}>{t('admin.save')}</button>
             <button className={btnDanger} disabled={busy} onClick={async () => { if (confirm(t('admin.confirmDelete'))) { setBusy(true); await onDelete(); setBusy(false) } }}>{t('admin.delete')}</button>
             <span role="status" className="text-sm text-cream/70">{msg}</span>
@@ -136,7 +145,8 @@ export function CollectionPage({ kind }: { kind: keyof typeof collections }) {
 export function Page({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
   return (
     <div>
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><h1 className="font-display text-3xl md:text-4xl">{title}</h1>{action}</div>
+      <h2 className="sr-only">{title}</h2>
+      {action && <div className="mb-5 flex flex-wrap items-center justify-end gap-3">{action}</div>}
       {children}
     </div>
   )
@@ -193,7 +203,7 @@ function DraftEditor({ entity, id, table, fields, children }: { entity: 'section
             {s.dirty && <span className="ms-2 text-magenta">{t('admin.unsaved')}</span>}</p>
           <RowForm fields={fields} row={s.value} onChange={(v) => s.setValue(v)} />
           {children?.(s.value)}
-          <div className="sticky bottom-0 -mx-4 flex flex-wrap gap-2 border-t border-cream/10 bg-ink/90 p-4 backdrop-blur">
+          <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom))] flex flex-wrap gap-2 rounded-2xl bg-ink/95 p-3 shadow-[0_10px_30px_-10px_rgb(29_15_43/.35)] ring-1 ring-black/5 backdrop-blur lg:bottom-4">
             <button className={btnGhost} disabled={!s.dirty} onClick={run(s.saveDraft, 'admin.saved')}>{t('admin.saveDraft')}</button>
             <button className={btnGhost} onClick={run(async () => { await s.saveDraft(); open('/?preview=1', '_blank') }, 'admin.saved')}>{t('admin.preview')}</button>
             <button className={btnPrimary} onClick={run(s.publish, 'admin.published')}>{t('admin.publish')}</button>
@@ -288,7 +298,7 @@ export function TranslationsPage() {
       <Status loading={!val && !error} error={error} retry={load}>
         <ul className="space-y-2">
           {keys.map((k) => (
-            <li key={k} className="grid gap-1 rounded-xl border border-cream/10 p-3 md:grid-cols-[14rem_1fr_1fr] md:items-center md:gap-3">
+            <li key={k} className={`${card} grid gap-1 p-3 md:grid-cols-[14rem_1fr_1fr] md:items-center md:gap-3`}>
               <code className="text-xs text-cream/50">{k}</code>
               <span className="text-sm text-cream/70" dir={lang === 'ar' ? 'rtl' : 'ltr'}>{dicts[lang][k]}</span>
               <input aria-label={`${t('admin.override')} ${k}`} dir={lang === 'ar' ? 'rtl' : 'ltr'} placeholder={t('admin.override')}
@@ -414,20 +424,29 @@ export function MediaPage() {
     setProgress(null)
   }
 
+  const [drag, setDrag] = useState(false)
   const picker = (label: string, capture?: boolean) => (
     <label className={`${capture ? btnGhost : btnPrimary} cursor-pointer`}>
-      {label}
+      {capture ? <Camera className="size-4" aria-hidden /> : <Upload className="size-4" aria-hidden />}{label}
       <input type="file" className="sr-only" multiple={!capture} accept="image/*,video/*" {...(capture ? { capture: 'environment' } : {})}
         onChange={(e) => { void onFiles(e.target.files); e.target.value = '' }} disabled={!!progress} />
     </label>
   )
 
   return (
-    <Page title={t('admin.media')} action={<div className="flex flex-wrap gap-2">{picker(t('admin.upload'))}{picker(t('admin.camera'), true)}</div>}>
+    <Page title={t('admin.media')}>
+      <div onDragOver={(e) => { e.preventDefault(); setDrag(true) }} onDragLeave={() => setDrag(false)}
+        onDrop={(e) => { e.preventDefault(); setDrag(false); void onFiles(e.dataTransfer.files) }}
+        className={`mb-6 flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed p-6 text-center transition-colors md:p-8 ${drag ? 'border-magenta bg-magenta/5' : 'border-black/10 bg-ink'}`}>
+        <span className="grid size-12 place-items-center rounded-2xl bg-magenta/10 text-magenta"><Upload aria-hidden /></span>
+        <p className="font-semibold">{t('admin.dropHere')}</p>
+        <p className="text-xs text-mute">{t('admin.dropHint')}</p>
+        <div className="flex flex-wrap justify-center gap-2">{picker(t('admin.upload'))}{picker(t('admin.camera'), true)}</div>
+      </div>
       {progress && (
         <div className="mb-4" role="status">
           <p className="mb-1 text-sm">{t('admin.uploading')} {progress.name} — {Math.round(progress.p * 100)}%</p>
-          <div className="h-2 overflow-hidden rounded-full bg-cream/10"><div className="h-full bg-lime transition-[width]" style={{ width: `${progress.p * 100}%` }} /></div>
+          <div className="h-2 overflow-hidden rounded-full bg-black/5"><div className="h-full bg-gradient-to-r from-magenta to-lilac transition-[width]" style={{ width: `${progress.p * 100}%` }} /></div>
         </div>
       )}
       {err && <p role="alert" className="mb-4 text-magenta">{t('admin.error')} {err}</p>}
@@ -438,10 +457,14 @@ export function MediaPage() {
         </p>
       )}
       <Status loading={loading} error={error} empty={!rows.length} retry={load}>
-        <ul className="space-y-3">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 xl:grid-cols-4">
           {rows.map((r) => (
-            <RowCard key={r.id} row={r} fields={mediaFields} table="portfolio_items"
-              preview={<img src={String(r.thumb || r.poster || r.src)} alt="" className="size-12 shrink-0 rounded-lg object-cover" loading="lazy" />}
+            <RowCard key={r.id} row={r} fields={mediaFields} table="portfolio_items" tile
+              preview={<>
+                <img src={String(r.thumb || r.poster || r.src)} alt="" className="h-full w-full object-cover" loading="lazy" />
+                {r.kind === 'video' && <span className="absolute end-2 top-2 grid size-8 place-items-center rounded-full bg-white/90 text-[#1d1426] shadow"><Play className="size-4" aria-hidden /></span>}
+                {!!r.is_illustration && <span className="absolute start-2 top-2 rounded-full bg-[#1d0f2b]/75 px-2 py-0.5 text-[10px] font-bold uppercase text-white">{t('illus.label')}</span>}
+              </>}
               extra={
                 <div className="flex flex-wrap items-start gap-4">
                   {r.kind === 'video'
@@ -481,7 +504,7 @@ export function MessagesPage() {
         {rows?.length === 0 ? <p className="text-cream/60">{t('admin.noMessages')}</p> : (
           <ul className="space-y-3">
             {rows?.map((m) => (
-              <li key={m.id} className="rounded-2xl border border-cream/10 bg-ink-2 p-4">
+              <li key={m.id} className={`${card} p-4 md:p-5`}>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <p className="font-semibold">{m.name} · <a className="text-lime underline" href={`mailto:${m.email}`}>{m.email}</a></p>
                   <time className="text-xs text-cream/50">{new Date(m.created_at).toLocaleString()}</time>
