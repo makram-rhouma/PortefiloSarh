@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #121014;
+  --color-ink-2: #1c181f;
+  --color-ink-3: #29232d;
+  --color-wine: #7b1e3f;
+  --color-wine-2: #5a1430;
+  --color-cream: #f7f1ea;
+  --color-mute: #b9aeb5;
+  --color-magenta: #ff2e93;
+  --color-lime: #d8ff3e;
+  --color-lilac: #b79bff;
+  --font-display: "Fraunces", "Noto Naskh Arabic", Georgia, serif;
+  --font-script: "Allura", "Aref Ruqaa", cursive;
+  --font-sans: "Manrope", "Tajawal", system-ui, sans-serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  --dur-fast: 160ms;
+  --dur-base: 320ms;
+  --dur-slow: 700ms;
+  color-scheme: dark;
+}
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  @apply bg-ink text-cream font-sans antialiased;
+  overflow-x: clip;
+}
+html[dir="rtl"] body { font-family: "Tajawal", "Manrope", system-ui, sans-serif; }
+html[dir="rtl"] .font-display { font-family: "Noto Naskh Arabic", "Fraunces", serif; }
+section[id] { scroll-margin-top: 4.5rem; }
+::selection { background: var(--color-magenta); color: white; }
+:focus-visible { outline: 2px solid var(--color-lime); outline-offset: 3px; border-radius: 6px; }
+
+/* film grain + aurora: CSS-only art (no stock or generated photos) */
+.grain::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.aurora {
+  background:
+    radial-gradient(40% 50% at 15% 20%, color-mix(in oklab, var(--color-magenta) 45%, transparent), transparent 70%),
+    radial-gradient(35% 45% at 85% 30%, color-mix(in oklab, var(--color-lilac) 40%, transparent), transparent 70%),
+    radial-gradient(30% 40% at 60% 90%, color-mix(in oklab, var(--color-lime) 22%, transparent), transparent 70%),
+    radial-gradient(60% 60% at 50% 50%, var(--color-wine-2), transparent 80%);
+  filter: blur(30px) saturate(120%);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+@keyframes drift { to { transform: translate3d(2%, -3%, 0) scale(1.08) rotate(3deg); } }
+
+/* iridescent featured CTA */
+.iridescent {
+  background: conic-gradient(from var(--a, 0deg), var(--color-magenta), var(--color-lilac), var(--color-lime), var(--color-magenta));
+  animation: spin-a 6s linear infinite;
+}
+@property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes spin-a { to { --a: 360deg; } }
+
+/* QR scan light */
+@keyframes scan { 0%,100% { top: 1rem; } 50% { top: calc(100% - 1.4rem); } }
+.scanline { animation: scan 3.2s var(--ease-out-expo) infinite; }
+@keyframes dash { to { stroke-dashoffset: 0; } }
+
+.text-balance { text-wrap: balance; }
+.masonry { columns: 2 160px; column-gap: .75rem; }
+@media (min-width: 768px) { .masonry { columns: 3 220px; column-gap: 1rem; } }
+@media (min-width: 1200px) { .masonry { columns: 4 240px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

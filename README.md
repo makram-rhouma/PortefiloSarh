@@ -1,0 +1,58 @@
+# Sarah Jaballah — Portfolio & CMS
+
+Multilingual (EN · FR · AR/RTL · ES) personal portfolio with an admin CMS at `/admin`.
+Stack: React 19 + TypeScript + Vite + Tailwind CSS 4 + Framer Motion + Supabase (Auth, Postgres, Storage). Hosted on Netlify.
+
+## Install & run
+```bash
+npm install
+cp .env.example .env   # then fill in the values
+npm run dev            # http://localhost:5173
+```
+
+## Environment variables (no values here — set them in `.env` locally and in Netlify → Site configuration → Environment variables)
+| Name | What |
+|---|---|
+| `VITE_SUPABASE_URL` | Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable (public) client key — never a service-role/secret key |
+| `VITE_PUBLIC_SITE_URL` | Production URL (canonical, QR code default) |
+
+`.env*` is git-ignored. No service-role key, DB password or secret is used by the app.
+
+## Scripts
+| | |
+|---|---|
+| `npm run build` | typecheck + production build to `dist/` |
+| `npm run typecheck` / `npm run lint` / `npm test` | TypeScript, oxlint, Vitest unit tests |
+| `node scripts/e2e.mjs <url> [shotsDir]` | Chrome end-to-end checks (responsive 320→1440, menu, i18n/RTL, gallery, video, QR, form, `/admin` deep link) |
+| `npm run seed` | regenerate `supabase/migrations/*_seed.sql` from `src/content/defaults.ts` |
+| `bash scripts/optimize-media.sh` | rebuild `public/media/` from the original files (originals are only read) |
+
+## Database (Supabase)
+Migrations live in `supabase/migrations/` and are idempotent (re-runnable, never drop data):
+1. `…_schema.sql` — tables `site_settings`, `portfolio_sections`, `content_drafts`, `experiences`, `education`, `skills`, `languages`, `social_links`, `media_assets`, `portfolio_items`, `contact_messages`, the `admins` role table + `is_admin()`, RLS policies and the `portfolio-media` storage bucket (public read, admin-only write, 50 MB, image/video MIME allow-list).
+2. `…_seed.sql` — initial content from the CV (insert-only, `on conflict do nothing`).
+
+Apply with the Supabase CLI (`supabase db push`) or paste them, in order, into Dashboard → SQL Editor.
+
+**Security model:** the public can read visible rows only; every write is checked in the database by RLS (`is_admin()`), never only in the frontend. Visitors can only insert contact messages (validated by check constraints).
+
+### Make someone an admin
+1. Create the user (Dashboard → Authentication → Users → Add user, or sign-up).
+2. In the SQL editor:
+```sql
+insert into public.admins (user_id) select id from auth.users where email = 'ADMIN_EMAIL' on conflict do nothing;
+```
+
+## CMS (`/admin`)
+Overview · Content (draft → preview `/?preview=1` → publish) · Media library (upload from files or phone camera, progress bar, replace, confirmed delete, multilingual title/description/caption, category, order, featured, visible, orphan-file cleanup) · Experiences · Education · Skills · Languages · Social links · Contact messages · Translations (override any UI string per language) · Site settings · QR settings. Unsaved-changes guard on navigation and tab close.
+
+## Media
+- Originals stay untouched in the parent `sarah/` folder.
+- `public/media/video/` — 3 real videos (AI-restored masters re-encoded to 720×1272 H.264, fast-start) + WebP/AVIF posters + a muted 8 s hero loop.
+- `public/media/img/` — 10 real stills taken from the videos (WebP + small thumbnails) and 3 illustrations supplied by the owner (marked “Artwork”, never presented as photos).
+- No AI-generated imagery is used; backgrounds are CSS/SVG (aurora gradients, grain).
+
+## Deploy (Netlify)
+`netlify.toml` sets build command `npm run build`, publish dir `dist`, Node 22, SPA fallback (so `/admin` survives a refresh) and cache headers. Connect the GitHub repo in Netlify, add the three env vars above, and deploy previews are on by default for pull requests.
+The contact form stores messages in Supabase (shown in the CMS) and also posts a copy to Netlify Forms for email notifications.
