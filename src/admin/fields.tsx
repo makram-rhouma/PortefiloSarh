@@ -10,7 +10,7 @@ export type Field =
   | { name: string; label: Key | string; type: 'select'; options: string[] }
 
 type Row = Record<string, unknown>
-const input = 'mt-1 block w-full rounded-xl border border-cream/15 bg-ink px-3 py-2.5 text-base text-cream focus:border-lime focus:outline-none'
+const input = 'mt-1 block w-full rounded-xl border border-cream/15 bg-ink px-3 py-2.5 text-base text-cream focus:border-magenta focus:outline-none'
 
 export function FieldEditor({ field, value, onChange }: { field: Field; value: unknown; onChange: (v: unknown) => void }) {
   const { t } = useI18n()
@@ -18,7 +18,7 @@ export function FieldEditor({ field, value, onChange }: { field: Field; value: u
   if (field.type === 'bool')
     return (
       <label className="flex min-h-11 items-center gap-3 text-sm">
-        <input type="checkbox" className="size-5 accent-[var(--color-lime)]" checked={!!value} onChange={(e) => onChange(e.target.checked)} />{label}
+        <input type="checkbox" className="size-5 accent-[var(--color-magenta)]" checked={!!value} onChange={(e) => onChange(e.target.checked)} />{label}
       </label>
     )
   if (field.type === 'ml' || field.type === 'mltext' || field.type === 'mllist') {
@@ -92,6 +92,6 @@ export function Status({ loading, error, empty, retry, children }: { loading: bo
 }
 
 export const btn = 'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold transition active:translate-y-px disabled:opacity-50'
-export const btnPrimary = `${btn} bg-lime text-ink`
+export const btnPrimary = `${btn} bg-magenta text-white shadow-[0_6px_18px_-6px_var(--color-magenta)]`
 export const btnGhost = `${btn} border border-cream/20 hover:bg-cream/10`
 export const btnDanger = `${btn} border border-magenta/50 text-magenta hover:bg-magenta/10`

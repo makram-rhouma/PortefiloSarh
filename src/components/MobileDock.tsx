@@ -19,9 +19,9 @@ export function MobileDock() {
   useEffect(() => {
     // the section crossing the middle band of the viewport is the active one
     const io = new IntersectionObserver((entries) => {
-      for (const e of entries) if (e.isIntersecting) setActive(e.target.id === 'skills' || e.target.id === 'education' ? 'gallery' : e.target.id)
+      for (const e of entries) if (e.isIntersecting) setActive(({ videos: 'dance', skills: 'gallery', education: 'gallery' } as Record<string, string>)[e.target.id] ?? e.target.id)
     }, { rootMargin: '-45% 0px -50% 0px' })
-    for (const id of [...ITEMS.map((i) => i.id), 'skills', 'education']) { const el = document.getElementById(id); if (el) io.observe(el) }
+    for (const id of [...ITEMS.map((i) => i.id), 'videos', 'skills', 'education']) { const el = document.getElementById(id); if (el) io.observe(el) }
     // hide while the on-screen keyboard is up so it never covers the focused field
     const on = (e: FocusEvent) => setTyping((e.target as HTMLElement).matches?.('input,textarea,select') ?? false)
     addEventListener('focusin', on); addEventListener('focusout', () => setTyping(false))

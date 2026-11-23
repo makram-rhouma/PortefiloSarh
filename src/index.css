@@ -1,18 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #121014;
-  --color-ink-2: #1c181f;
-  --color-ink-3: #29232d;
+  --color-ink: #0f0a16;
+  --color-plum: #1d0f2b;
+  --color-blush: #fbe4ef;
+  --color-gold: #ffd93d;
+  --color-ink-2: #170d22;
+  --color-ink-3: #261537;
   --color-wine: #7b1e3f;
   --color-wine-2: #5a1430;
   --color-cream: #f7f1ea;
   --color-mute: #b9aeb5;
   --color-magenta: #ff2e93;
-  --color-lime: #d8ff3e;
+  --color-lime: #e8ff3a;
   --color-lilac: #b79bff;
-  --font-display: "Fraunces", "Noto Naskh Arabic", Georgia, serif;
-  --font-script: "Allura", "Aref Ruqaa", cursive;
+  --font-display: "Playfair Display", "Noto Naskh Arabic", Georgia, serif;
+  --font-script: "Mr Dafoe", "Aref Ruqaa", cursive;
   --font-sans: "Manrope", "Tajawal", system-ui, sans-serif;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -75,3 +78,31 @@ section[id] { scroll-margin-top: 4.5rem; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* ── Mockup art direction ───────────────────────────────── */
+.hero-bg {
+  background:
+    radial-gradient(45% 60% at 55% 30%, rgb(120 60 255 / .55), transparent 70%),
+    radial-gradient(40% 50% at 15% 70%, rgb(255 46 147 / .45), transparent 70%),
+    radial-gradient(35% 45% at 90% 80%, rgb(255 46 147 / .35), transparent 70%),
+    linear-gradient(180deg, #120824 0%, #1d0f2b 55%, #0f0a16 100%);
+}
+.stars { background-image: radial-gradient(1px 1px at 20% 30%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 70% 20%, #fff6 50%, transparent 51%),
+  radial-gradient(1.5px 1.5px at 40% 80%, #ffd93d99 50%, transparent 51%), radial-gradient(1px 1px at 85% 60%, #fff7 50%, transparent 51%),
+  radial-gradient(1px 1px at 10% 90%, #fff5 50%, transparent 51%), radial-gradient(1.5px 1.5px at 60% 55%, #ff2e9399 50%, transparent 51%);
+  background-size: 340px 340px; }
+@utility fade-mask { mask-image: linear-gradient(to right, transparent, #000 22%, #000 78%, transparent), linear-gradient(to bottom, #000 72%, transparent); mask-composite: intersect; }
+@utility fade-mask-b { mask-image: linear-gradient(to bottom, #000 60%, transparent); }
+.brush { position: absolute; height: 18px; border-radius: 999px; filter: blur(.5px); transform: rotate(-18deg); opacity: .9; }
+.glow-magenta { box-shadow: 0 0 0 1px rgb(255 46 147 / .6), 0 0 24px rgb(255 46 147 / .45); }
+.glow-lime { box-shadow: 0 0 0 2px var(--color-lime), 0 0 26px rgb(232 255 58 / .45); }
+@utility tilt-r { clip-path: polygon(7% 0, 100% 0, 100% 100%, 0 100%); }
+html[dir="rtl"] .lg\:tilt-r { clip-path: polygon(0 0, 93% 0, 100% 100%, 0 100%); }
+
+/* Admin content area: light theme from the mockup, by remapping the palette tokens */
+.admin-light {
+  --color-ink: #ffffff; --color-ink-2: #f6f2f8; --color-ink-3: #ece4f1;
+  --color-cream: #1d1426; --color-mute: #6b5f73; --color-lime: #c2007a; --color-lilac: #6d3fd1;
+  color-scheme: light;
+}
+.admin-light :is(input, textarea, select) { background: #fff; }

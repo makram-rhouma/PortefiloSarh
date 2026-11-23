@@ -502,28 +502,65 @@ export function MessagesPage() {
 }
 
 export function Overview() {
-  const { t } = useI18n()
+  const { t, ml: tml } = useI18n()
   const [counts, setCounts] = useState<Record<string, number | string>>({})
+  const [recent, setRecent] = useState<{ label: string; when: string; to: string }[] | null>(null)
   useEffect(() => {
-    const tables = ['portfolio_items', 'experiences', 'education', 'skills', 'languages', 'social_links', 'contact_messages']
+    const tables = ['portfolio_items', 'portfolio_sections', 'languages', 'contact_messages']
     void Promise.all(tables.map(async (tb) => {
       const { count, error } = await supabase.from(tb).select('*', { count: 'exact', head: true })
       return [tb, error ? '!' : count ?? 0] as const
     })).then((r) => setCounts(Object.fromEntries(r)))
-  }, [])
-  const links: [string, Key, string][] = [
-    ['media', 'admin.media', 'portfolio_items'], ['experiences', 'admin.experiences', 'experiences'], ['education', 'admin.education', 'education'],
-    ['skills', 'admin.skills', 'skills'], ['languages', 'admin.languages', 'languages'], ['socials', 'admin.socials', 'social_links'], ['contact', 'admin.messages', 'contact_messages'],
+    // Recent activity = latest edited rows across content tables
+    void Promise.all([
+      supabase.from('portfolio_items').select('title,updated_at').order('updated_at', { ascending: false }).limit(3),
+      supabase.from('portfolio_sections').select('key,updated_at').order('updated_at', { ascending: false }).limit(2),
+      supabase.from('contact_messages').select('name,created_at').order('created_at', { ascending: false }).limit(2),
+    ]).then(([m, sec, msg]) => setRecent([
+      ...(m.data ?? []).map((r) => ({ label: `${t('admin.media')} · ${tml(r.title as d.ML)}`, when: r.updated_at as string, to: '/admin/media' })),
+      ...(sec.data ?? []).map((r) => ({ label: `${t('admin.content')} · ${r.key}`, when: r.updated_at as string, to: '/admin/content' })),
+      ...(msg.data ?? []).map((r) => ({ label: `${t('admin.messages')} · ${r.name}`, when: r.created_at as string, to: '/admin/contact' })),
+    ].sort((a, b) => b.when.localeCompare(a.when)).slice(0, 6)))
+  }, [t, tml])
+  const cards: [string, Key, string][] = [
+    ['portfolio_items', 'admin.mediaItems', 'bg-[#e8f1ff] text-[#2563eb]'], ['portfolio_sections', 'admin.sections', 'bg-[#fff1e6] text-[#ea580c]'],
+    ['languages', 'admin.languages', 'bg-[#fff9db] text-[#a16207]'], ['contact_messages', 'admin.messages', 'bg-[#e7f8ee] text-[#15803d]'],
   ]
+  const ago = (iso: string) => {
+    const m = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000))
+    return new Intl.RelativeTimeFormat(document.documentElement.lang, { numeric: 'auto' }).format(-(m < 60 ? m : m < 1440 ? Math.round(m / 60) : Math.round(m / 1440)), m < 60 ? 'minute' : m < 1440 ? 'hour' : 'day')
+  }
+  const quick: [string, Key][] = [['/admin/media', 'admin.addPhoto'], ['/admin/media', 'admin.addVideo'], ['/admin/content', 'admin.editContent']]
   return (
     <Page title={t('admin.overview')}>
+      <p className="-mt-4 mb-6 text-sm text-mute">{t('admin.manage')}</p>
       <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {links.map(([to, k, tb]) => (
-          <li key={to}><Link to={`/admin/${to}`} className="block rounded-2xl border border-cream/10 bg-ink-2 p-4 hover:border-lime/50">
-            <p className="font-display text-4xl text-lime">{counts[tb] ?? '…'}</p><p className="mt-1 text-sm text-cream/70">{t(k)}</p>
-          </Link></li>
+        {cards.map(([tb, k, tone]) => (
+          <li key={tb} className="rounded-2xl border border-ink-3 bg-ink p-4 text-center shadow-sm">
+            <span className={`mx-auto grid size-12 place-items-center rounded-full text-lg font-bold ${tone}`}>{counts[tb] ?? '…'}</span>
+            <p className="mt-2 text-xs font-medium text-mute">{t(k)}</p>
+          </li>
         ))}
       </ul>
+      <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+        <section className="rounded-2xl border border-ink-3 bg-ink p-5 shadow-sm">
+          <h2 className="mb-3 font-semibold">{t('admin.recent')}</h2>
+          <Status loading={!recent} error={null} empty={recent?.length === 0}>
+            <ul className="divide-y divide-ink-3">
+              {recent?.map((r, i) => (
+                <li key={i}><Link to={r.to} className="flex min-h-12 items-center justify-between gap-3 text-sm hover:text-magenta">
+                  <span className="truncate">{r.label}</span><time className="shrink-0 text-xs text-mute">{ago(r.when)}</time></Link></li>
+              ))}
+            </ul>
+          </Status>
+        </section>
+        <section className="rounded-2xl border border-ink-3 bg-ink p-5 shadow-sm">
+          <h2 className="mb-3 font-semibold">{t('admin.quick')}</h2>
+          <ul className="space-y-1">
+            {quick.map(([to, k]) => <li key={k}><Link to={to} className="flex min-h-12 items-center gap-3 rounded-xl px-2 text-sm hover:bg-ink-2"><span className="grid size-8 place-items-center rounded-lg bg-magenta/10 text-magenta">+</span>{t(k)}</Link></li>)}
+          </ul>
+        </section>
+      </div>
     </Page>
   )
 }

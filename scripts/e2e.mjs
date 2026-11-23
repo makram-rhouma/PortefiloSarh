@@ -25,7 +25,7 @@ for (const width of [320, 360, 375, 390, 414, 430, 768, 1024, 1440]) {
   const smallTargets = await page.evaluate(() => [...document.querySelectorAll('main button, header button, footer a, #gallery button')]
     .filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && (r.height < 40 || r.width < 40) }).map((e) => e.textContent?.trim() || e.getAttribute('aria-label')))
   check(smallTargets.length === 0, `${width}px: tap targets >= 40px ${smallTargets.slice(0, 5).join(' | ')}`)
-  const vids = await page.evaluate(() => [...document.querySelectorAll('#dance video')].every((v) => v.getBoundingClientRect().width <= innerWidth && v.getBoundingClientRect().height <= innerHeight))
+  const vids = await page.evaluate(() => [...document.querySelectorAll('#videos video')].every((v) => v.getBoundingClientRect().width <= innerWidth && v.getBoundingClientRect().height <= innerHeight))
   check(vids, `${width}px: videos fit the screen`)
   if (width < 1024) {
     const dock = page.locator('nav[aria-label="Quick navigation"]')
@@ -68,7 +68,7 @@ for (const width of [320, 360, 375, 390, 414, 430, 768, 1024, 1440]) {
   await page.goto(base, { waitUntil: 'networkidle' }); await wait(2000)
   await page.evaluate(() => document.getElementById('skills').scrollIntoView({ behavior: 'instant' })); await wait(800)
   const before = await page.evaluate(() => document.getElementById('skills').getBoundingClientRect().top)
-  await page.locator('footer [aria-pressed]').filter({ hasText: /^ar$/ }).click(); await wait(800)
+  await page.locator('footer button[aria-haspopup]').click(); await page.locator('footer [data-lang=ar]').click(); await wait(800)
   const after = await page.evaluate(() => document.getElementById('skills').getBoundingClientRect().top)
   check(await page.evaluate(() => document.documentElement.dir === 'rtl' && document.documentElement.lang === 'ar'), 'AR sets dir=rtl and lang=ar')
   check((await page.evaluate(() => scrollY)) > 1000, `language switch does not jump to top (section moved ${Math.round(after - before)}px)`)
@@ -78,7 +78,7 @@ for (const width of [320, 360, 375, 390, 414, 430, 768, 1024, 1440]) {
   await page.reload({ waitUntil: 'networkidle' }); await wait(500)
   check(await page.evaluate(() => document.documentElement.lang === 'ar'), 'language choice remembered after reload')
   for (const [l, h] of [['fr', 'Ce que j’apporte à bord'], ['es', 'Lo que aporto a bordo'], ['en', 'What I bring on board']]) {
-    await page.locator('footer [aria-pressed]').filter({ hasText: new RegExp(`^${l}$`) }).click(); await wait(300)
+    await page.locator('footer button[aria-haspopup]').click(); await page.locator(`footer [data-lang=${l}]`).click(); await wait(300)
     check((await page.locator('#skills h2').textContent()) === h, `${l.toUpperCase()} content translated`)
   }
   await ctx.close()
@@ -89,26 +89,30 @@ for (const width of [320, 360, 375, 390, 414, 430, 768, 1024, 1440]) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
   const page = await ctx.newPage()
   await page.goto(base, { waitUntil: 'networkidle' }); await wait(2000)
+  const more0 = page.locator('#gallery button[aria-expanded="false"]')
+  if (await more0.count()) { await more0.first().click(); await wait(600) }
   const all = await page.locator('#gallery li').count()
   await page.locator('#gallery [aria-pressed]', { hasText: 'Fitness' }).click(); await wait(600)
   const fit = await page.locator('#gallery li').count()
-  check(all > fit && fit > 0, `gallery filter (all ${all} -> fitness ${fit})`)
+  check(all > fit && fit > 0 && fit <= 4, `gallery filter + view all (all ${all} -> fitness ${fit})`)
   await page.locator('#gallery li button').first().click(); await wait(600)
   check(await page.getByRole('dialog').isVisible(), 'lightbox opens')
   await page.keyboard.press('ArrowRight'); await wait(400)
   await page.keyboard.press('Escape'); await wait(800)
   check(!(await page.getByRole('dialog').count()), 'lightbox closes with Escape')
   await page.locator('#gallery [aria-pressed]', { hasText: 'Zumba' }).click(); await wait(500)
-  await page.locator('#gallery li button').first().click(); await wait(600)
+  const more = page.locator('#gallery button[aria-expanded="false"]')
+  if (await more.count()) { await more.first().click(); await wait(500) }
+  await page.locator('#gallery li button[aria-label*="on the beat"]').click(); await wait(600)
   check(await page.getByRole('dialog').locator('video').count() === 1, 'video opens in the gallery overlay')
   await page.keyboard.press('Escape'); await wait(800)
 
-  await page.evaluate(() => document.getElementById('dance').scrollIntoView({ behavior: 'instant' })); await wait(600)
-  await page.locator('#dance button[aria-label="Play video"]').first().click(); await wait(2500)
-  const t = await page.evaluate(() => document.querySelector('#dance video').currentTime)
+  await page.evaluate(() => document.getElementById('videos').scrollIntoView({ behavior: 'instant' })); await wait(600)
+  await page.locator('#videos button[aria-label="Play video"]').first().click(); await wait(2500)
+  const t = await page.evaluate(() => document.querySelector('#videos video').currentTime)
   check(t > 0.3, `dance video plays (t=${t.toFixed(2)}s)`)
 
-  const qr = await page.locator('#contact svg[aria-label^="QR"]').getAttribute('aria-label')
+  const qr = await page.locator('#contact svg[aria-label^="QR"]').first().getAttribute('aria-label')
   check(!!qr && !/localhost/.test(qr), `QR points to production (${qr})`)
 
   await page.evaluate(() => document.getElementById('contact').scrollIntoView({ behavior: 'instant' }))
